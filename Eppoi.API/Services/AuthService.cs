@@ -41,4 +41,25 @@ public class AuthService : IAuthService
             Message = "Registration successful."
         };
     }
+    
+    public async Task<AuthResponse> LoginAsync(LoginRequest request)
+    {
+        // Find user by email
+        var user = await _userRepository.GetByEmailAsync(request.Email);
+        if (user == null)
+            throw new InvalidOperationException("Invalid email or password.");
+
+        // Verify password
+        var isValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+        if (!isValid)
+            throw new InvalidOperationException("Invalid email or password.");
+
+        return new AuthResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Message = "Login successful."
+        };
+    }
 }

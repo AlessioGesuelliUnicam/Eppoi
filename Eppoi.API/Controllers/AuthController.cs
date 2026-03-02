@@ -38,4 +38,24 @@ public class AuthController : ControllerBase
             return Conflict(new { message = ex.Message });
         }
     }
+    
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains("@"))
+            return BadRequest(new { message = "Valid email is required." });
+
+        if (string.IsNullOrWhiteSpace(request.Password))
+            return BadRequest(new { message = "Password is required." });
+
+        try
+        {
+            var result = await _authService.LoginAsync(request);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
 }
