@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Eppoi.API.Data;
+using Eppoi.API.Repositories;
+using Eppoi.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +12,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// CORS
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
