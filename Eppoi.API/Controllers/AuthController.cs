@@ -68,4 +68,48 @@ public class AuthController : ControllerBase
         // This endpoint confirms the logout action server-side.
         return Ok(new { message = "Logout successful. Please delete the token on the client." });
     }
+    
+    [HttpGet("verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+    {
+        try
+        {
+            await _authService.VerifyEmailAsync(token);
+            return Ok(new { message = "Email verified successfully. You can now login." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+    
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains("@"))
+            return BadRequest(new { message = "Valid email is required." });
+
+        await _authService.ForgotPasswordAsync(request);
+        return Ok(new { message = "If the email exists, a reset link has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Token))
+            return BadRequest(new { message = "Token is required." });
+
+        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 6)
+            return BadRequest(new { message = "Password must be at least 6 characters." });
+
+        try
+        {
+            await _authService.ResetPasswordAsync(request);
+            return Ok(new { message = "Password reset successfully. You can now login." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
