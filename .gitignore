@@ -419,3 +419,6 @@ FodyWeavers.xsd
 
 # Rider / IntelliJ
 .idea/
+
+# Local development configuration (contains credentials)
+Eppoi.API/appsettings.Development.json
