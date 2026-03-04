@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using BCrypt.Net;
 using Eppoi.API.DTOs;
 using Eppoi.API.Models;
 using Eppoi.API.Repositories;
@@ -14,11 +13,13 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
+    private readonly IEmailService _emailService;
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    public AuthService(IUserRepository userRepository, IConfiguration configuration, IEmailService emailService)
     {
         _userRepository = userRepository;
         _configuration = configuration;
+        _emailService = emailService;
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
@@ -28,22 +29,32 @@ public class AuthService : IAuthService
             throw new InvalidOperationException("Email already registered.");
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        var verificationToken = Guid.NewGuid().ToString();
 
         var user = new User
         {
             Name = request.Name,
             Email = request.Email,
-            PasswordHash = passwordHash
+            PasswordHash = passwordHash,
+            IsEmailVerified = false,
+            EmailVerificationToken = verificationToken
         };
 
         var created = await _userRepository.CreateAsync(user);
+
+        var verificationLink = $"http://localhost:5052/api/Auth/verify-email?token={verificationToken}";
+        await _emailService.SendEmailAsync(
+            created.Email,
+            "Verifica la tua email — Eppoi",
+            EmailTemplates.EmailVerification(created.Name, verificationLink)
+        );
 
         return new AuthResponse
         {
             Id = created.Id,
             Name = created.Name,
             Email = created.Email,
-            Message = "Registration successful.",
+            Message = "Registration successful. Please check your email to verify your account.",
             Token = string.Empty
         };
     }
@@ -68,6 +79,17 @@ public class AuthService : IAuthService
             Message = "Login successful.",
             Token = token
         };
+    }
+
+    public async Task VerifyEmailAsync(string token)
+    {
+        var user = await _userRepository.GetByVerificationTokenAsync(token);
+        if (user == null)
+            throw new InvalidOperationException("Invalid verification token.");
+
+        user.IsEmailVerified = true;
+        user.EmailVerificationToken = null;
+        await _userRepository.UpdateAsync(user);
     }
 
     private string GenerateJwtToken(User user)

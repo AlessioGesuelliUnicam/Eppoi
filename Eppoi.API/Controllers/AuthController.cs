@@ -68,4 +68,18 @@ public class AuthController : ControllerBase
         // This endpoint confirms the logout action server-side.
         return Ok(new { message = "Logout successful. Please delete the token on the client." });
     }
+    
+    [HttpGet("verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+    {
+        try
+        {
+            await _authService.VerifyEmailAsync(token);
+            return Ok(new { message = "Email verified successfully. You can now login." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
