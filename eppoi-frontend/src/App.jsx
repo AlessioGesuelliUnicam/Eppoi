@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react"
+// src/App.jsx
+import { useState } from 'react';
+import Login from './components/Login';
+import Register from './components/Register';
 
 function App() {
-    const [status, setStatus] = useState("Connecting...")
+  const [currentView, setCurrentView] = useState('login');
 
-    useEffect(() => {
-        fetch("http://localhost:5052/api/health")
-            .then(res => {
-                if (res.ok) setStatus("✅ Backend connected!")
-                else setStatus("❌ Backend error")
-            })
-            .catch(() => setStatus("❌ Cannot reach backend"))
-    }, [])
+  const toggleView = () => {
+    setCurrentView(currentView === 'login' ? 'register' : 'login');
+  };
 
-    return (
-        <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-            <h1>Eppoi App</h1>
-            <p>Backend status: <strong>{status}</strong></p>
-        </div>
-    )
+  return (
+    <div>
+      {currentView === 'login' ? (
+        <Login onSwitchView={toggleView} />
+      ) : (
+        <Register onSwitchView={toggleView} />
+      )}
+    </div>
+  );
 }
-
-export default App
+export default App;
