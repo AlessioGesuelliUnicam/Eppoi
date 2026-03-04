@@ -1,36 +1,24 @@
-using Microsoft.EntityFrameworkCore;
-using Eppoi.API.Data;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// CORS
-builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    "ConnectionStrings": {
+        "DefaultConnection": ""
+    },
+    "Jwt": {
+        "Key": "",
+        "Issuer": "eppoi-api",
+        "Audience": "eppoi-frontend"
+    },
+    "Email": {
+        "SmtpHost": "smtp.gmail.com",
+        "SmtpPort": 587,
+        "SenderEmail": "",
+        "SenderName": "Eppoi App",
+        "Password": ""
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "AllowedHosts": "*"
 }
-
-app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
-app.MapControllers();
-
-app.Run();
