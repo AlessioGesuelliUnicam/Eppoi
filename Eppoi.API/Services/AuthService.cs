@@ -115,4 +115,38 @@ public class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+    
+    public async Task ForgotPasswordAsync(ForgotPasswordRequest request)
+    {
+        var user = await _userRepository.GetByEmailAsync(request.Email);
+        if (user == null)
+            return; // Non rivelare se l'email esiste o meno
+
+        var resetToken = Guid.NewGuid().ToString();
+        user.PasswordResetToken = resetToken;
+        user.PasswordResetTokenExpiresAt = DateTime.UtcNow.AddHours(1);
+        await _userRepository.UpdateAsync(user);
+
+        var resetLink = $"http://localhost:5173/reset-password?token={resetToken}";
+        await _emailService.SendEmailAsync(
+            user.Email,
+            "Reset password — Eppoi",
+            EmailTemplates.PasswordReset(user.Name, resetLink)
+        );
+    }
+
+    public async Task ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        var user = await _userRepository.GetByPasswordResetTokenAsync(request.Token);
+        if (user == null)
+            throw new InvalidOperationException("Invalid or expired reset token.");
+
+        if (user.PasswordResetTokenExpiresAt < DateTime.UtcNow)
+            throw new InvalidOperationException("Invalid or expired reset token.");
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpiresAt = null;
+        await _userRepository.UpdateAsync(user);
+    }
 }

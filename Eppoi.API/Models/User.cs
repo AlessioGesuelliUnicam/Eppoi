@@ -9,4 +9,6 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsEmailVerified { get; set; } = false;
     public string? EmailVerificationToken { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
 }
