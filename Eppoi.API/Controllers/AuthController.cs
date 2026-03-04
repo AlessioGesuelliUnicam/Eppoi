@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Eppoi.API.DTOs;
 using Eppoi.API.Services;
 
@@ -57,5 +58,14 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
+    }
+    
+    [Authorize]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        // JWT is stateless — the client must delete the token locally.
+        // This endpoint confirms the logout action server-side.
+        return Ok(new { message = "Logout successful. Please delete the token on the client." });
     }
 }
