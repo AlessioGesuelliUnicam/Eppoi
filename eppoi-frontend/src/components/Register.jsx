@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 
-export default function Register({ onSwitchView }) {
+export default function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -36,19 +39,22 @@ export default function Register({ onSwitchView }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          name: formData.name,
           email: formData.email,
           password: formData.password
         })
       });
       
       if (!response.ok) {
-        throw new Error('Registration failed. The email might already be in use or the server is unreachable.');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Registration failed. The email might already be in use or the server is unreachable.');
       }
       
-      setStatus({ type: 'success', message: 'Account created successfully! You can now log in.' });
+      const data = await response.json();
+      setStatus({ type: 'success', message: data.message || 'Account created successfully! Check your email to verify your account.' });
       
       // Clear sensitive data from memory
-      setFormData({ email: '', password: '', confirmPassword: '' });
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
       
     } catch (error) {
       // Handles network errors (e.g., backend not running yet) gracefully
@@ -66,8 +72,21 @@ export default function Register({ onSwitchView }) {
             {status.message}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="name">Full Name</label>
+            <input 
+              type="text" 
+              id="name"
+              name="name" 
+              value={formData.name} 
+              onChange={handleInputChange} 
+              placeholder="John Doe"
+              required 
+            />
+          </div>
+
           <div className="input-group">
             <label htmlFor="email">Email Address</label>
             <input 
@@ -112,7 +131,7 @@ export default function Register({ onSwitchView }) {
         
         <div className="auth-switch">
           Already have an account? 
-          <span onClick={onSwitchView}>Log in here</span>
+          <span onClick={() => navigate('/login')}>Log in here</span>
         </div>
       </div>
     </div>

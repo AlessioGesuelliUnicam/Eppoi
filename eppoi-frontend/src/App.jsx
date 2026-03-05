@@ -1,23 +1,31 @@
-// src/App.jsx
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
+import VerifyEmail from './components/VerifyEmail';
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('authToken');
+  return token ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
-  const [currentView, setCurrentView] = useState('login');
-
-  const toggleView = () => {
-    setCurrentView(currentView === 'login' ? 'register' : 'login');
-  };
-
   return (
-    <div>
-      {currentView === 'login' ? (
-        <Login onSwitchView={toggleView} />
-      ) : (
-        <Register onSwitchView={toggleView} />
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <div>Dashboard (TODO)</div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
   );
 }
+
 export default App;

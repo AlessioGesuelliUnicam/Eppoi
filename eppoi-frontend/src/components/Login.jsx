@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 
-export default function Login({ onSwitchView }) {
+export default function Login() {
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [status, setStatus] = useState({ type: '', message: '' });
 
@@ -9,7 +11,7 @@ export default function Login({ onSwitchView }) {
     const { name, value } = e.target;
     setCredentials((prevData) => ({ ...prevData, [name]: value }));
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
@@ -23,20 +25,19 @@ export default function Login({ onSwitchView }) {
       });
       
       if (!response.ok) {
-        throw new Error('Invalid email or password. Please try again.');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Invalid email or password. Please try again.');
       }
-      
+
       const data = await response.json();
       
       // Store the JWT token securely
       if (data.token) {
         localStorage.setItem('authToken', data.token);
         setStatus({ type: 'success', message: 'Authentication successful! Redirecting...' });
-        
+        navigate('/dashboard');
         // Clear credentials from state after successful login
         setCredentials({ email: '', password: '' });
-        
-        // TODO: Implement routing to redirect the user to the dashboard
       } else {
         throw new Error('Authentication failed: No valid token received.');
       }
@@ -90,7 +91,7 @@ export default function Login({ onSwitchView }) {
         
         <div className="auth-switch">
           Don't have an account yet? 
-          <span onClick={onSwitchView}>Sign up here</span>
+          <span onClick={() => navigate('/register')}>Sign up here</span>
         </div>
       </div>
     </div>
