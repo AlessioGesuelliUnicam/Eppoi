@@ -1,0 +1,22 @@
+namespace Eppoi.API.Models;
+
+public class Event
+{
+    public int Id { get; set; }
+    public string ExternalId { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Address { get; set; }
+    public string? ImagePath { get; set; }
+    public string? Typology { get; set; }
+    public string? Email { get; set; }
+    public string? Telephone { get; set; }
+    public string? Website { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    
+    public int MunicipalityId { get; set; }
+    public Municipality Municipality { get; set; } = null!;
+}
