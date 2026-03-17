@@ -35,7 +35,7 @@ export default function Login() {
       if (data.token) {
         localStorage.setItem('authToken', data.token);
         setStatus({ type: 'success', message: 'Authentication successful! Redirecting...' });
-        navigate('/dashboard');
+        navigate('/home');
         // Clear credentials from state after successful login
         setCredentials({ email: '', password: '' });
       } else {
