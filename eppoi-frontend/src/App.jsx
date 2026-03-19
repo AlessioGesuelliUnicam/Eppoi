@@ -3,6 +3,10 @@ import Login from './components/Login';
 import Register from './components/Register';
 import VerifyEmail from './components/VerifyEmail';
 import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Events from './pages/Events';
+import News from './pages/News';
+import Organizations from './pages/Organizations';
 
 /**
  * Wrapper component for routes that require authentication.
@@ -34,25 +38,25 @@ function App() {
         {/* Protected routes — require JWT token */}
         <Route path="/home" element={
           <ProtectedRoute>
-            <div>Home (TODO)</div>
+            <Home />
           </ProtectedRoute>
         } />
 
         <Route path="/events" element={
           <ProtectedRoute>
-            <div>Events (TODO)</div>
+            <Events />
           </ProtectedRoute>
         } />
 
         <Route path="/news" element={
           <ProtectedRoute>
-            <div>News (TODO)</div>
+            <News />
           </ProtectedRoute>
         } />
 
         <Route path="/organizations" element={
           <ProtectedRoute>
-            <div>Organizations (TODO)</div>
+            <Organizations />
           </ProtectedRoute>
         } />
 
