@@ -30,6 +30,6 @@ export const fetchWithAuth = async (endpoint) => {
  */
 export const getImageUrl = (imagePath) => {
   return imagePath
-    ? `https://apispm.eppoi.io${imagePath}`
+    ? `https://eppoi.io${imagePath}`
     : '/placeholder.svg';
 };
