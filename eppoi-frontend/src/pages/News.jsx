@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
 import { fetchWithAuth, getImageUrl } from '../utils/api';
+import MunicipalityFilter from '../components/MunicipalityFilter';
 import './News.css';
 
 export default function News() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [municipalityId, setMunicipalityId] = useState(null);
 
   useEffect(() => {
     const loadArticles = async () => {
-      const data = await fetchWithAuth('/api/content/articles');
+      setLoading(true);
+      const endpoint = municipalityId
+        ? `/api/content/articles?municipalityId=${municipalityId}`
+        : '/api/content/articles';
+      const data = await fetchWithAuth(endpoint);
       if (data) setArticles(data);
       setLoading(false);
     };
     loadArticles();
-  }, []);
+  }, [municipalityId]);
 
   // Format ISO date to readable string (e.g. "15 Mar 2026")
   const formatDate = (dateString) => {
@@ -28,6 +34,7 @@ export default function News() {
   return (
     <div className="page-container">
       <h1 className="page-title">News</h1>
+      <MunicipalityFilter onChange={setMunicipalityId} />
 
       {articles.length === 0 ? (
         <p className="page-empty">No articles available at the moment.</p>

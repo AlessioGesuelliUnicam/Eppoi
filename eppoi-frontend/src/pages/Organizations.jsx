@@ -1,25 +1,32 @@
 import { useState, useEffect } from 'react';
 import { fetchWithAuth, getImageUrl } from '../utils/api';
+import MunicipalityFilter from '../components/MunicipalityFilter';
 import './Organizations.css';
 
 export default function Organizations() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [municipalityId, setMunicipalityId] = useState(null);
 
   useEffect(() => {
     const loadOrganizations = async () => {
-      const data = await fetchWithAuth('/api/content/organizations');
+      setLoading(true);
+      const endpoint = municipalityId
+        ? `/api/content/organizations?municipalityId=${municipalityId}`
+        : '/api/content/organizations';
+      const data = await fetchWithAuth(endpoint);
       if (data) setOrganizations(data);
       setLoading(false);
     };
     loadOrganizations();
-  }, []);
+  }, [municipalityId]);
 
   if (loading) return <div className="page-loading">Loading...</div>;
 
   return (
     <div className="page-container">
       <h1 className="page-title">Organizations</h1>
+      <MunicipalityFilter onChange={setMunicipalityId} />
 
       {organizations.length === 0 ? (
         <p className="page-empty">No organizations found.</p>

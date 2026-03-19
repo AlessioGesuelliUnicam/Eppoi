@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
 import { fetchWithAuth, getImageUrl } from '../utils/api';
+import MunicipalityFilter from '../components/MunicipalityFilter';
 import './Events.css';
 
 export default function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [municipalityId, setMunicipalityId] = useState(null);
 
   useEffect(() => {
     const loadEvents = async () => {
-      const data = await fetchWithAuth('/api/content/events');
+      setLoading(true);
+      const endpoint = municipalityId
+        ? `/api/content/events?municipalityId=${municipalityId}`
+        : '/api/content/events';
+      const data = await fetchWithAuth(endpoint);
       if (data) setEvents(data);
       setLoading(false);
     };
     loadEvents();
-  }, []);
+  }, [municipalityId]);
 
   /**
    * Formats an ISO date string into a readable format (e.g. "15 Mar 2026").
@@ -31,6 +37,7 @@ export default function Events() {
   return (
     <div className="page-container">
       <h1 className="page-title">Events</h1>
+      <MunicipalityFilter onChange={setMunicipalityId} />
 
       {events.length === 0 ? (
         <p className="page-empty">No events available at the moment.</p>

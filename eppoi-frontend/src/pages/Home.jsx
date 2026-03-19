@@ -1,25 +1,36 @@
 import { useState, useEffect } from 'react';
 import { fetchWithAuth, getImageUrl } from '../utils/api';
+import MunicipalityFilter from '../components/MunicipalityFilter';
 import './Home.css';
 
 export default function Home() {
   const [pois, setPois] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [municipalityId, setMunicipalityId] = useState(null);
 
+  /**
+   * Re-fetch POIs whenever the selected municipality changes.
+   * If no municipality is selected, fetches all POIs.
+   */
   useEffect(() => {
     const loadPois = async () => {
-      const data = await fetchWithAuth('/api/content/poi');
+      setLoading(true);
+      const endpoint = municipalityId
+        ? `/api/content/poi?municipalityId=${municipalityId}`
+        : '/api/content/poi';
+      const data = await fetchWithAuth(endpoint);
       if (data) setPois(data);
       setLoading(false);
     };
     loadPois();
-  }, []);
+  }, [municipalityId]);
 
   if (loading) return <div className="page-loading">Loading...</div>;
 
   return (
     <div className="page-container">
       <h1 className="page-title">Points of Interest</h1>
+      <MunicipalityFilter onChange={setMunicipalityId} />
 
       {pois.length === 0 ? (
         <p className="page-empty">No points of interest found.</p>
