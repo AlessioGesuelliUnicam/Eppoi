@@ -22,6 +22,10 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IIngestionService, IngestionService>();
 
+builder.Services.AddScoped<IProfileService, ProfileService>();
+
+builder.Services.AddScoped<IPersonalizationService, PersonalizationService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>

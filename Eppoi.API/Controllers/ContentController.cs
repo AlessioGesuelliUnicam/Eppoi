@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Eppoi.API.Data;
+using Eppoi.API.Services;
 
 namespace Eppoi.API.Controllers;
 
@@ -11,10 +13,12 @@ namespace Eppoi.API.Controllers;
 public class ContentController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IPersonalizationService _personalizationService;
 
-    public ContentController(AppDbContext context)
+    public ContentController(AppDbContext context, IPersonalizationService personalizationService)
     {
         _context = context;
+        _personalizationService = personalizationService;
     }
 
     [HttpGet("poi")]
@@ -120,5 +124,13 @@ public class ContentController : ControllerBase
             .ToListAsync();
 
         return Ok(municipalities);
+    }
+
+    [HttpGet("personalized")]
+    public async Task<IActionResult> GetPersonalized([FromQuery] int? municipalityId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var result = await _personalizationService.GetPersonalizedContentAsync(userId, municipalityId);
+        return Ok(result);
     }
 }
