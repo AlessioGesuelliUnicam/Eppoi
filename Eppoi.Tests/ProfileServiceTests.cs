@@ -87,4 +87,35 @@ public class ProfileServiceTests
         Assert.True(vector.ContainsKey("Shopping"));
         Assert.True(vector.ContainsKey("Events"));
     }
+    [Fact]
+    public void BuildProfileVector_WithBeachAndSea_SetsNatureWeight()
+    {
+        var interests = new List<string> { "Beach & Sea" };
+        var vector = _profileService.BuildProfileVector(interests);
+        Assert.Equal(0.7, vector["Nature"]);
+    }
+
+    [Fact]
+    public void BuildProfileVector_WithWellnessRelaxation_SetsNatureWeight()
+    {
+        var interests = new List<string> { "Wellness & Relaxation" };
+        var vector = _profileService.BuildProfileVector(interests);
+        Assert.Equal(0.7, vector["Nature"]);
+    }
+
+    [Fact]
+    public void BuildProfileVector_WithThreeNatureInterests_CapsNatureAtOne()
+    {
+        var interests = new List<string> { "Nature & Adventure", "Wellness & Relaxation", "Beach & Sea" };
+        var vector = _profileService.BuildProfileVector(interests);
+        Assert.Equal(1.0, vector["Nature"]);
+    }
+
+    [Fact]
+    public void BuildProfileVector_UnknownInterest_DoesNotThrow()
+    {
+        var interests = new List<string> { "Unknown Category" };
+        var exception = Record.Exception(() => _profileService.BuildProfileVector(interests));
+        Assert.Null(exception);
+    }
 }
