@@ -1,0 +1,157 @@
+.questionnaire-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 1rem;
+}
+
+.questionnaire-card {
+  background: #ffffff;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 520px;
+}
+
+.questionnaire-title {
+  text-align: center;
+  color: #111827;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Progress bar with 3 steps */
+.progress-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.progress-step {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background-color: #e5e7eb;
+  transition: background-color 0.3s ease;
+}
+
+.progress-step.active {
+  background-color: #2563eb;
+}
+
+.step-indicator {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 1.5rem;
+}
+
+.questionnaire-error {
+  font-size: 0.875rem;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #f87171;
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.step-content h3 {
+  color: #111827;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.step-hint {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.option-chip {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-chip:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.option-chip.selected {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.questionnaire-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.btn-back,
+.btn-next,
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-back {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.btn-back:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-next {
+  background-color: #2563eb;
+  color: white;
+  margin-left: auto;
+}
+
+.btn-next:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-submit {
+  background-color: #16a34a;
+  color: white;
+  margin-left: auto;
+}
+
+.btn-submit:hover {
+  background-color: #15803d;
+}
+
+.btn-next:disabled,
+.btn-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

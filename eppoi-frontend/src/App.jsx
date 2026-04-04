@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Events from './pages/Events';
 import News from './pages/News';
 import Organizations from './pages/Organizations';
+import Questionnaire from './pages/Questionnaire';
 
 /**
  * Wrapper component for routes that require authentication.
@@ -34,6 +35,13 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+
+        {/* Questionnaire — protected but without Navbar (full-screen flow) */}
+        <Route path="/questionnaire" element={
+          localStorage.getItem('authToken')
+            ? <Questionnaire />
+            : <Navigate to="/login" replace />
+        } />
 
         {/* Protected routes — require JWT token */}
         <Route path="/home" element={
