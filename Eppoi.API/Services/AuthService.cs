@@ -42,12 +42,21 @@ public class AuthService : IAuthService
 
         var created = await _userRepository.CreateAsync(user);
 
-        var verificationLink = $"http://localhost:5052/api/Auth/verify-email?token={verificationToken}";
-        await _emailService.SendEmailAsync(
-            created.Email,
-            "Verifica la tua email — Eppoi",
-            EmailTemplates.EmailVerification(created.Name, verificationLink)
-        );
+        // Send the verification email but don't fail registration if SMTP is down
+        // or misconfigured — the user is already persisted in the DB at this point.
+        try
+        {
+            var verificationLink = $"http://localhost:5052/api/Auth/verify-email?token={verificationToken}";
+            await _emailService.SendEmailAsync(
+                created.Email,
+                "Verifica la tua email — Eppoi",
+                EmailTemplates.EmailVerification(created.Name, verificationLink)
+            );
+        }
+        catch (Exception)
+        {
+            // TODO: log the error so we know when emails fail
+        }
 
         return new AuthResponse
         {

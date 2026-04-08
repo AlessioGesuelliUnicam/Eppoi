@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../utils/api';
 import './Auth.css';
 
 export default function Login() {
@@ -31,13 +32,20 @@ export default function Login() {
 
       const data = await response.json();
       
-      // Store the JWT token securely
       if (data.token) {
+        // Store the token first so fetchWithAuth can use it immediately
         localStorage.setItem('authToken', data.token);
-        setStatus({ type: 'success', message: 'Authentication successful! Redirecting...' });
-        navigate('/home');
-        // Clear credentials from state after successful login
         setCredentials({ email: '', password: '' });
+        setStatus({ type: 'success', message: 'Authentication successful! Redirecting...' });
+
+        // Check if the user has already completed the questionnaire.
+        // If not, redirect to the questionnaire before showing the home page.
+        const profile = await fetchWithAuth('/api/profile/me');
+        if (profile && !profile.hasCompletedQuestionnaire) {
+          navigate('/questionnaire');
+        } else {
+          navigate('/home');
+        }
       } else {
         throw new Error('Authentication failed: No valid token received.');
       }
