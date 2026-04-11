@@ -4,52 +4,76 @@ import MunicipalityFilter from '../components/MunicipalityFilter';
 import './Home.css';
 
 export default function Home() {
-  const [pois, setPois] = useState([]);
+  const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [municipalityId, setMunicipalityId] = useState(null);
 
   /**
-   * Re-fetch POIs whenever the selected municipality changes.
-   * If no municipality is selected, fetches all POIs.
+   * Fetch personalized content (mix of POI and Events sorted by relevance).
+   * Re-fetches whenever the selected municipality changes.
    */
   useEffect(() => {
-    const loadPois = async () => {
+    const loadContent = async () => {
       setLoading(true);
       const endpoint = municipalityId
-        ? `/api/content/poi?municipalityId=${municipalityId}`
-        : '/api/content/poi';
+        ? `/api/content/personalized?municipalityId=${municipalityId}`
+        : '/api/content/personalized';
       const data = await fetchWithAuth(endpoint);
-      if (data) setPois(data);
+      if (data) setContent(data);
       setLoading(false);
     };
-    loadPois();
+    loadContent();
   }, [municipalityId]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+  };
 
   if (loading) return <div className="page-loading">Loading...</div>;
 
   return (
     <div className="page-container">
-      <h1 className="page-title">Points of Interest</h1>
+      <h1 className="page-title">For You</h1>
       <MunicipalityFilter onChange={setMunicipalityId} />
 
-      {pois.length === 0 ? (
-        <p className="page-empty">No points of interest found.</p>
+      {content.length === 0 ? (
+        <p className="page-empty">No personalized content available yet.</p>
       ) : (
         <div className="card-grid">
-          {pois.map((poi) => (
-            <div key={poi.id} className="card">
-              <img
-                src={getImageUrl(poi.imagePath)}
-                alt={poi.name}
-                className="card-image"
-                // Prevent infinite loop: set placeholder and stop retrying
-                onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.svg'; }}
-              />
+          {content.map((item) => (
+            <div key={`${item.contentType}-${item.id}`} className="card">
+              <div className="card-image-wrapper">
+                <img
+                  src={getImageUrl(item.imagePath)}
+                  alt={item.contentType === 'POI' ? item.name : item.title}
+                  className="card-image"
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.svg'; }}
+                />
+                {/* "For you" badge for highly relevant content (score > 0.7) */}
+                {item.score > 0.7 && (
+                  <span className="card-score-badge">For you</span>
+                )}
+                {/* Small label to distinguish POI from Event */}
+                <span className={`card-type-label ${item.contentType.toLowerCase()}`}>
+                  {item.contentType === 'POI' ? 'Place' : 'Event'}
+                </span>
+              </div>
               <div className="card-body">
-                <h3 className="card-title">{poi.name}</h3>
-                {/* Show the POI type as a badge (e.g. "ArtCulture", "Nature") */}
-                {poi.type && <span className="card-badge">{poi.type}</span>}
-                {poi.address && <p className="card-detail">{poi.address}</p>}
+                <h3 className="card-title">
+                  {item.contentType === 'POI' ? item.name : item.title}
+                </h3>
+                {item.type && <span className="card-badge">{item.type}</span>}
+                {/* Show date range for events */}
+                {item.contentType === 'Event' && item.startDate && (
+                  <p className="card-detail">
+                    {formatDate(item.startDate)}
+                    {item.endDate && ` — ${formatDate(item.endDate)}`}
+                  </p>
+                )}
+                {item.address && <p className="card-detail">{item.address}</p>}
               </div>
             </div>
           ))}

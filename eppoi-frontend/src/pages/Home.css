@@ -79,3 +79,41 @@
   color: #6b7280;
   margin-top: 0.25rem;
 }
+
+/* Wrapper for positioning badges over the card image */
+.card-image-wrapper {
+  position: relative;
+}
+
+/* "For you" badge — shown on cards with score > 0.7 */
+.card-score-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background-color: #16a34a;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Label to distinguish POI from Event on the card image */
+.card-type-label {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  color: white;
+}
+
+.card-type-label.poi {
+  background-color: #2563eb;
+}
+
+.card-type-label.event {
+  background-color: #9333ea;
+}
