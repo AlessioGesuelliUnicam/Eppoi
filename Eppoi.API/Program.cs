@@ -26,6 +26,8 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddScoped<IPersonalizationService, PersonalizationService>();
 
+builder.Services.AddScoped<IChatService, ChatService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
