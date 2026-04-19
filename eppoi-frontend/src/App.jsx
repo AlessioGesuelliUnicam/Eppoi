@@ -8,6 +8,7 @@ import Events from './pages/Events';
 import News from './pages/News';
 import Organizations from './pages/Organizations';
 import Questionnaire from './pages/Questionnaire';
+import Chat from './pages/Chat';
 
 /**
  * Wrapper component for routes that require authentication.
@@ -65,6 +66,12 @@ function App() {
         <Route path="/organizations" element={
           <ProtectedRoute>
             <Organizations />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/chat" element={
+          <ProtectedRoute>
+            <Chat />
           </ProtectedRoute>
         } />
 

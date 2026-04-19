@@ -15,6 +15,7 @@ export default function Navbar() {
     { path: '/events', label: 'Events' },
     { path: '/news', label: 'News' },
     { path: '/organizations', label: 'Organizations' },
+    { path: '/chat', label: 'Chat' },
   ];
 
   return (
