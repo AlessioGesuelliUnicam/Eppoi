@@ -75,11 +75,11 @@ public class AuthController : ControllerBase
         try
         {
             await _authService.VerifyEmailAsync(token);
-            return Ok(new { message = "Email verified successfully. You can now login." });
+            return Redirect("http://localhost:5173/login?verified=true");
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return BadRequest(new { message = ex.Message });
+            return Redirect("http://localhost:5173/login?error=invalid-token");
         }
     }
     
